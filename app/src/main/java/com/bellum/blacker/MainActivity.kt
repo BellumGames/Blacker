@@ -1,28 +1,84 @@
 package com.bellum.blacker
 
+import android.Manifest
 import android.content.pm.PackageManager
-import android.content.pm.PackageManager.PERMISSION_DENIED
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.bellum.blacker.main.DisplayMusicAlt
-import com.bellum.blacker.main.DisplayMusics
-import com.bellum.blacker.main.getAllMP3Alt
-import com.bellum.blacker.main.readFromFile
 import com.bellum.blacker.ui.theme.BlackerTheme
-import java.util.jar.Manifest
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ){ isGrandted: Boolean ->
+            if(isGrandted){
+                Log.i("Permission: ", "Granted")
+            } else {
+                Log.i("Permission: ", "Denied")
+            }
+        }
+
+    private fun requestSelfPermission_READ_EXTERNAL_STORAGE(){
+        when{
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                //Permission is granted
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+                //Additional rationale should be displayed
+            }
+            else -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+                //Permission has not been asked yet
+            }
+        }
+    }
+
+    private fun requestSelfPermission_READ_MEDIA_AUDIO(){
+        when{
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_MEDIA_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                //Permission is granted
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.READ_MEDIA_AUDIO
+            ) -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.READ_MEDIA_AUDIO
+                )
+                //Additional rationale should be displayed
+            }
+            else -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.READ_MEDIA_AUDIO
+                )
+                //Permission has not been asked yet
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,11 +88,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    requestSelfPermission_READ_MEDIA_AUDIO()
                     //DisplayMusics(getAllMP3Alt(this))
+                    /*
                     if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_DENIED){
                         shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                         ActivityResultContracts.RequestPermission()
-                    }
+                    }*/
                     /*
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                         requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1000)
